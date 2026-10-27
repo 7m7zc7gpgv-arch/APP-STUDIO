@@ -97,8 +97,8 @@
 		.credits-label { color: var(--muted); font-size: 12px; }
 		.credits-value { margin-top: 7px; font: 38px/.98 var(--serif); }
 		.credits-value small { color: var(--muted); font: 14px var(--sans); }
-		.progress-track { height: 6px; margin: 16px 0 8px; overflow: hidden; border-radius: 5px; background: #e8ebe5; }
-		.progress-fill { width: 0; height: 100%; border-radius: inherit; background: var(--orange); transition: width .3s ease; }
+		.progress-track { height: 7px; margin: 16px 0 8px; overflow: hidden; border-radius: 5px; background: #e1e6e1; }
+		.progress-fill { width: 0; height: 100%; border-radius: inherit; background: #4c9870; transition: width .55s cubic-bezier(.2, .75, .25, 1); }
 		.progress-caption { display: flex; justify-content: space-between; color: var(--muted); font-size: 11px; }
 
 		.section-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 14px; }
@@ -114,10 +114,18 @@
 		.course-name strong { display: block; overflow: hidden; font-size: 13px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
 		.course-name small { display: block; margin-top: 2px; color: var(--muted); font-size: 11px; }
 		.course-area { overflow: hidden; color: #637069; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
-		.planned-form { display: grid; grid-template-columns: minmax(180px, 1.5fr) minmax(180px, 1fr) 100px auto; align-items: end; gap: 12px; margin: 0 0 16px; padding: 18px; border: 1px solid var(--line); border-radius: 7px; background: var(--white); }
+		.planned-form { display: grid; grid-template-columns: minmax(180px, 1.5fr) repeat(2, minmax(125px, 1fr)) 90px auto; align-items: end; gap: 12px; margin: 0 0 16px; padding: 18px; border: 1px solid var(--line); border-radius: 7px; background: var(--white); }
 		.planned-form .field { margin: 0; }
 		.planned-form input, .planned-form select { width: 100%; height: 40px; padding: 0 11px; border: 1px solid var(--line); border-radius: 4px; background: #fff; color: var(--ink); font: inherit; }
 		.planned-list { display: grid; gap: 8px; }
+		.planned-year { margin: 0 0 24px; }
+		.planned-year-heading { margin: 0 0 12px; padding-bottom: 8px; border-bottom: 1px solid var(--line); color: var(--green); font: 22px var(--serif); }
+		.planned-semester { margin: 0 0 18px; }
+		.planned-semester-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 0 0 8px; color: #53615a; font-size: 13px; }
+		.semester-credits { color: var(--muted); font-size: 11px; font-weight: 400; white-space: nowrap; }
+		.semester-progress { height: 7px; margin: 0 0 5px; overflow: hidden; border-radius: 5px; background: #e1e6e1; }
+		.semester-progress-fill { width: 0; height: 100%; border-radius: inherit; background: #4c9870; transition: width .55s cubic-bezier(.2, .75, .25, 1); }
+		.semester-progress-caption { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 9px; color: var(--muted); font-size: 10px; }
 		.planned-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 72px; padding: 12px 16px; border: 1px solid var(--line); border-radius: 6px; background: var(--white); }
 		.planned-name { min-width: 0; }
 		.planned-name strong { display: block; overflow: hidden; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
@@ -272,11 +280,11 @@
 					<article class="credits-card">
 						<div>
 							<span class="credits-label">CFU acquisiti</span>
-							<div class="credits-value"><span id="credits-value">0</span> <small>/ 180 CFU</small></div>
+							<div class="credits-value"><span id="credits-value">0</span> <small>/ <span id="planned-credits-total">0</span> CFU</small></div>
 						</div>
 						<div>
-							<div class="progress-track" role="progressbar" aria-label="Avanzamento CFU" aria-valuemin="0" aria-valuemax="180" aria-valuenow="0"><div class="progress-fill" id="progress-fill"></div></div>
-							<div class="progress-caption"><span>Avanzamento percorso</span><span id="progress-label">0%</span></div>
+							<div class="progress-track" id="degree-progress" role="progressbar" aria-label="Avanzamento CFU" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0"><div class="progress-fill" id="progress-fill"></div></div>
+							<div class="progress-caption"><span>Avanzamento del piano</span><span id="progress-label">0%</span></div>
 						</div>
 					</article>
 					<article class="stat-card">
@@ -307,13 +315,11 @@
 					</div>
 					<form class="planned-form" id="planned-form">
 						<div class="field"><label for="planned-name">Nome corso</label><input id="planned-name" name="name" placeholder="es. Analisi matematica II" maxlength="60" required></div>
-						<div class="field"><label for="planned-period">Anno / Semestre</label><select id="planned-period" name="period" required>
-							<option value="1° anno · 1° semestre">1° anno · 1° semestre</option><option value="1° anno · 2° semestre">1° anno · 2° semestre</option>
-							<option value="2° anno · 1° semestre">2° anno · 1° semestre</option><option value="2° anno · 2° semestre">2° anno · 2° semestre</option>
-							<option value="3° anno · 1° semestre">3° anno · 1° semestre</option><option value="3° anno · 2° semestre">3° anno · 2° semestre</option>
-							<option value="4° anno · 1° semestre">4° anno · 1° semestre</option><option value="4° anno · 2° semestre">4° anno · 2° semestre</option>
-							<option value="5° anno · 1° semestre">5° anno · 1° semestre</option><option value="5° anno · 2° semestre">5° anno · 2° semestre</option>
+						<div class="field"><label for="planned-year">Anno di corso</label><select id="planned-year" name="year" required>
+							<option value="1° Anno">1° Anno</option><option value="2° Anno">2° Anno</option><option value="3° Anno">3° Anno</option>
+							<option value="4° Anno">4° Anno</option><option value="5° Anno">5° Anno</option><option value="Fuori Corso">Fuori Corso</option>
 						</select></div>
+						<div class="field"><label for="planned-semester">Semestre</label><select id="planned-semester" name="semester" required><option value="1° Semestre">1° Semestre</option><option value="2° Semestre">2° Semestre</option></select></div>
 						<div class="field"><label for="planned-credits">CFU</label><input id="planned-credits" name="credits" type="number" min="1" max="30" value="6" required></div>
 						<button class="primary-button" type="submit"><span class="plus" aria-hidden="true">+</span>Aggiungi al piano</button>
 					</form>
@@ -398,7 +404,21 @@
 			try {
 				const saved = localStorage.getItem("quaderno-planned-courses");
 				const parsed = saved ? JSON.parse(saved) : [];
-				return Array.isArray(parsed) ? parsed : [];
+				if (!Array.isArray(parsed)) return [];
+				const normalized = parsed.map((course) => {
+					if (course.year && course.semester) return course;
+					const legacyPeriod = String(course.period || "");
+					const match = legacyPeriod.match(/(\d+)°\s*anno\s*[·-]\s*(\d+)°\s*semestre/i);
+					return {
+						...course,
+						year: match ? `${match[1]}° Anno` : "Fuori Corso",
+						semester: match ? `${match[2]}° Semestre` : "1° Semestre"
+					};
+				});
+				if (normalized.some((course, index) => course !== parsed[index])) {
+					localStorage.setItem("quaderno-planned-courses", JSON.stringify(normalized));
+				}
+				return normalized;
 			} catch {
 				return [];
 			}
@@ -426,6 +446,12 @@
 
 		function isEligibility(course) {
 			return course.assessmentType === "eligibility";
+		}
+
+		function hasAcquiredCredits(course) {
+			return isEligibility(course)
+				? course.eligibilityStatus === "passed"
+				: numericGrade(course.grade) !== null;
 		}
 
 		function renderCourses() {
@@ -479,6 +505,7 @@
 						course.eligibilityStatus = result.value;
 						saveCourses();
 						updateSummary();
+						renderPlannedCourses();
 					});
 				} else {
 					result = document.createElement("input");
@@ -501,6 +528,7 @@
 						result.value = course.grade ?? "";
 						saveCourses();
 						updateSummary();
+						renderPlannedCourses();
 					});
 				}
 
@@ -522,6 +550,7 @@
 					course.credits = value;
 					saveCourses();
 					updateSummary();
+					renderPlannedCourses();
 				});
 
 				const remove = document.createElement("button");
@@ -534,7 +563,8 @@
 					plannedCourses.push({
 						id: Date.now(),
 						name: course.name,
-						period: course.period || "Da pianificare",
+						year: course.year || "Fuori Corso",
+						semester: course.semester || "1° Semestre",
 						credits: Number(course.credits)
 					});
 					courses = courses.filter((item) => item.id !== course.id);
@@ -563,43 +593,112 @@
 				list.append(empty);
 			}
 
-			plannedCourses.forEach((course) => {
-				const row = document.createElement("article");
-				row.className = "planned-row";
-				const name = document.createElement("div");
-				name.className = "planned-name";
-				const title = document.createElement("strong");
-				title.textContent = course.name;
-				const period = document.createElement("span");
-				period.textContent = course.period;
-				name.append(title, period);
+			const yearOrder = ["1° Anno", "2° Anno", "3° Anno", "4° Anno", "5° Anno", "Fuori Corso"];
+			const semesterOrder = ["1° Semestre", "2° Semestre"];
+			const groupedCourses = [...plannedCourses, ...courses.filter((course) => course.year && course.semester)];
+			const years = [...new Set(groupedCourses.map((course) => course.year))]
+				.sort((first, second) => yearOrder.indexOf(first) - yearOrder.indexOf(second));
 
-				const actions = document.createElement("div");
-				actions.className = "planned-actions";
-				const credits = document.createElement("span");
-				credits.className = "planned-credits";
-				credits.textContent = `${course.credits} CFU`;
-				const complete = document.createElement("button");
-				complete.className = "primary-button";
-				complete.type = "button";
-				complete.textContent = "Segna come Superato";
-				complete.addEventListener("click", () => openPassModal(course));
-				const remove = document.createElement("button");
-				remove.className = "planned-remove";
-				remove.type = "button";
-				remove.textContent = "×";
-				remove.setAttribute("aria-label", `Rimuovi ${course.name} dal piano`);
-				remove.addEventListener("click", () => {
-					plannedCourses = plannedCourses.filter((item) => item.id !== course.id);
-					savePlannedCourses();
-					renderPlannedCourses();
+			years.forEach((year) => {
+				const yearSection = document.createElement("section");
+				yearSection.className = "planned-year";
+				const yearHeading = document.createElement("h3");
+				yearHeading.className = "planned-year-heading";
+				yearHeading.textContent = year;
+				yearSection.append(yearHeading);
+
+				semesterOrder.forEach((semester) => {
+					const semesterCourses = plannedCourses.filter((course) => course.year === year && course.semester === semester);
+					const completedCourses = courses.filter((course) => course.year === year && course.semester === semester);
+					if (semesterCourses.length === 0 && completedCourses.length === 0) return;
+
+					const semesterSection = document.createElement("section");
+					semesterSection.className = "planned-semester";
+					const semesterHeading = document.createElement("h4");
+					semesterHeading.className = "planned-semester-heading";
+					const semesterName = document.createElement("span");
+					semesterName.textContent = semester;
+					const semesterCredits = document.createElement("span");
+					semesterCredits.className = "semester-credits";
+					const plannedCredits = semesterCourses.reduce((sum, course) => sum + Number(course.credits), 0);
+					const completedCredits = completedCourses.reduce((sum, course) => sum + (hasAcquiredCredits(course) ? Number(course.credits) : 0), 0);
+					const semesterTotal = plannedCredits + completedCourses.reduce((sum, course) => sum + Number(course.credits), 0);
+					const semesterProgress = semesterTotal ? Math.min(100, Math.round((completedCredits / semesterTotal) * 100)) : 0;
+					semesterCredits.textContent = `${semesterTotal} CFU totali`;
+					semesterHeading.append(semesterName, semesterCredits);
+					semesterSection.append(semesterHeading);
+					const progressTrack = document.createElement("div");
+					progressTrack.className = "semester-progress";
+					progressTrack.setAttribute("role", "progressbar");
+					progressTrack.setAttribute("aria-label", `Avanzamento ${year}, ${semester}`);
+					progressTrack.setAttribute("aria-valuemin", "0");
+					progressTrack.setAttribute("aria-valuemax", String(semesterTotal));
+					progressTrack.setAttribute("aria-valuenow", String(completedCredits));
+					const progressFill = document.createElement("div");
+					progressFill.className = "semester-progress-fill";
+					progressFill.style.width = `${semesterProgress}%`;
+					progressTrack.append(progressFill);
+					const progressCaption = document.createElement("div");
+					progressCaption.className = "semester-progress-caption";
+					const progressDetail = document.createElement("span");
+					progressDetail.textContent = `${completedCredits} / ${semesterTotal} CFU completati`;
+					const progressPercent = document.createElement("span");
+					progressPercent.textContent = `${semesterProgress}%`;
+					progressCaption.append(progressDetail, progressPercent);
+					semesterSection.append(progressTrack, progressCaption);
+
+					const semesterList = document.createElement("div");
+					semesterList.className = "planned-list";
+					if (semesterCourses.length === 0) {
+						const completeMessage = document.createElement("p");
+						completeMessage.className = "empty-state";
+						completeMessage.textContent = semesterProgress === 100 ? "Tutti gli esami del periodo sono superati." : "Nessun esame mancante in questo periodo.";
+						semesterList.append(completeMessage);
+					}
+					semesterCourses.forEach((course) => {
+						const row = document.createElement("article");
+						row.className = "planned-row";
+						const name = document.createElement("div");
+						name.className = "planned-name";
+						const title = document.createElement("strong");
+						title.textContent = course.name;
+						const detail = document.createElement("span");
+						detail.textContent = "Esame da sostenere";
+						name.append(title, detail);
+
+						const actions = document.createElement("div");
+						actions.className = "planned-actions";
+						const credits = document.createElement("span");
+						credits.className = "planned-credits";
+						credits.textContent = `${course.credits} CFU`;
+						const complete = document.createElement("button");
+						complete.className = "primary-button";
+						complete.type = "button";
+						complete.textContent = "Segna come Superato";
+						complete.addEventListener("click", () => openPassModal(course));
+						const remove = document.createElement("button");
+						remove.className = "planned-remove";
+						remove.type = "button";
+						remove.textContent = "×";
+						remove.setAttribute("aria-label", `Rimuovi ${course.name} dal piano`);
+						remove.addEventListener("click", () => {
+							plannedCourses = plannedCourses.filter((item) => item.id !== course.id);
+							savePlannedCourses();
+							renderPlannedCourses();
+						});
+						actions.append(credits, complete, remove);
+						row.append(name, actions);
+						semesterList.append(row);
+					});
+					semesterSection.append(semesterList);
+					yearSection.append(semesterSection);
 				});
-				actions.append(credits, complete, remove);
-				row.append(name, actions);
-				list.append(row);
+
+				list.append(yearSection);
 			});
 
 			document.getElementById("planned-count").textContent = `${plannedCourses.length} ${plannedCourses.length === 1 ? "esame" : "esami"}`;
+			updateSummary();
 		}
 
 		function updateSummary() {
@@ -616,15 +715,20 @@
 				? gradedCourses.reduce((sum, course) => sum + numericGrade(course.grade), 0) / gradedCourses.length
 				: null;
 			const formattedAverage = formatAverage(weightedAverage);
-			const progress = Math.min(100, Math.round((creditsTotal / 180) * 100));
+			const plannedCreditsTotal = courses.reduce((sum, course) => sum + Number(course.credits), 0)
+				+ plannedCourses.reduce((sum, course) => sum + Number(course.credits), 0);
+			const progress = plannedCreditsTotal ? Math.min(100, Math.round((creditsTotal / plannedCreditsTotal) * 100)) : 0;
 
 			document.getElementById("average-value").textContent = formattedAverage;
 			document.getElementById("table-average").textContent = weightedAverage === null ? "Ancora nessun voto" : `${formattedAverage} / 30`;
 			document.getElementById("arithmetic-average").textContent = formatAverage(arithmeticAverage);
 			document.getElementById("credits-value").textContent = creditsTotal;
+			document.getElementById("planned-credits-total").textContent = plannedCreditsTotal;
 			document.getElementById("progress-label").textContent = `${progress}%`;
 			document.getElementById("progress-fill").style.width = `${progress}%`;
-			document.querySelector("[role='progressbar']").setAttribute("aria-valuenow", String(Math.min(creditsTotal, 180)));
+			const degreeProgress = document.getElementById("degree-progress");
+			degreeProgress.setAttribute("aria-valuemax", String(plannedCreditsTotal));
+			degreeProgress.setAttribute("aria-valuenow", String(creditsTotal));
 
 			const simulatedCredits = Number(document.getElementById("simulator-credits").value);
 			const simulatedGrade = numericGrade(document.getElementById("simulator-grade").value);
@@ -700,7 +804,8 @@
 				id: Date.now(),
 				name: plannedCourse.name,
 				area: "Piano di studi",
-				period: plannedCourse.period,
+				year: plannedCourse.year,
+				semester: plannedCourse.semester,
 				assessmentType: selectedAssessmentType,
 				grade: selectedAssessmentType === "grade" ? (gradeValue === "30L" ? "30L" : value) : null,
 				eligibilityStatus: selectedAssessmentType === "eligibility" ? "passed" : null,
@@ -742,7 +847,8 @@
 			plannedCourses.push({
 				id: Date.now(),
 				name,
-				period: String(data.get("period")),
+				year: String(data.get("year")),
+				semester: String(data.get("semester")),
 				credits
 			});
 			savePlannedCourses();
