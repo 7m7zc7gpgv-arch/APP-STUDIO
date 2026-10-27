@@ -79,7 +79,7 @@
 		.primary-button:hover { transform: translateY(-1px); background: #194b3b; }
 		.primary-button .plus { font-size: 19px; font-weight: 400; line-height: 1; }
 
-		.overview { display: grid; grid-template-columns: minmax(0, 1fr) 270px; gap: 18px; margin-bottom: 34px; }
+		.overview { display: grid; grid-template-columns: minmax(0, 1fr) 220px 220px; gap: 14px; margin-bottom: 34px; }
 		.average-card { position: relative; display: flex; min-height: 178px; align-items: center; justify-content: space-between; overflow: hidden; padding: 26px 30px; border-radius: 7px; background: var(--green); color: white; }
 		.average-card::after { position: absolute; right: 100px; bottom: -96px; width: 230px; height: 230px; border: 1px solid #ffffff25; border-radius: 50%; content: ""; }
 		.average-card::before { position: absolute; right: -37px; bottom: -132px; width: 250px; height: 250px; border: 1px solid #ffffff20; border-radius: 50%; content: ""; }
@@ -91,6 +91,9 @@
 		.average-number strong { display: block; font: 58px/.98 var(--serif); }
 		.average-number span { display: block; margin-top: 8px; color: #c6d8ce; font-size: 11px; }
 		.credits-card { display: flex; flex-direction: column; justify-content: space-between; padding: 23px 24px; border: 1px solid var(--line); border-radius: 7px; background: var(--white); }
+		.stat-card { display: flex; flex-direction: column; justify-content: center; padding: 23px 24px; border: 1px solid var(--line); border-radius: 7px; background: var(--white); }
+		.stat-card .credits-value { color: var(--green); }
+		.stat-card .stat-note { margin-top: 8px; color: var(--muted); font-size: 11px; }
 		.credits-label { color: var(--muted); font-size: 12px; }
 		.credits-value { margin-top: 7px; font: 38px/.98 var(--serif); }
 		.credits-value small { color: var(--muted); font: 14px var(--sans); }
@@ -133,6 +136,16 @@
 		.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 		.modal-actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 20px; }
 		.secondary-button { min-height: 40px; padding: 0 13px; border: 1px solid var(--line); border-radius: 4px; background: white; color: #5d6862; }
+		.simulator { margin-top: 30px; padding: 22px 24px; border: 1px solid var(--line); border-radius: 7px; background: var(--white); }
+		.simulator-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-bottom: 18px; }
+		.simulator-header h2 { margin: 0; font: 23px var(--serif); }
+		.simulator-header p { margin: 5px 0 0; color: var(--muted); font-size: 12px; }
+		.simulator-fields { display: grid; grid-template-columns: 1fr 1fr minmax(190px, 1.2fr); align-items: end; gap: 14px; }
+		.simulator .field { margin: 0; }
+		.field select { width: 100%; height: 40px; padding: 0 11px; border: 1px solid var(--line); border-radius: 4px; background: #fff; color: var(--ink); font: inherit; }
+		.simulator-result { min-height: 40px; padding: 5px 12px; border-left: 2px solid var(--orange); }
+		.simulator-result span { display: block; color: var(--muted); font-size: 11px; }
+		.simulator-result strong { color: var(--green); font: 20px var(--serif); }
 
 		@media (max-width: 920px) {
 			main { padding-right: 30px; padding-left: 30px; }
@@ -153,11 +166,12 @@
 			.subtitle { font-size: 13px; }
 			.primary-button { width: 42px; min-width: 42px; justify-content: center; padding: 0; font-size: 0; }
 			.primary-button .plus { font-size: 21px; }
-			.overview { grid-template-columns: 1fr; gap: 10px; margin-bottom: 27px; }
+			.overview { grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 27px; }
 			.average-card { min-height: 150px; padding: 22px; }
+			.average-card { grid-column: 1 / -1; }
 			.average-number { padding-right: 0; }
 			.average-number strong { font-size: 49px; }
-			.credits-card { min-height: 120px; }
+			.credits-card, .stat-card { min-height: 120px; padding: 18px; }
 			.credits-value { font-size: 32px; }
 			.section-heading h2 { font-size: 23px; }
 			.course-table { overflow: visible; border: 0; background: transparent; }
@@ -170,6 +184,9 @@
 			.credits-input { grid-column: 3; grid-row: 1 / 3; width: 54px; }
 			.row-action { grid-column: 4; grid-row: 1 / 3; }
 			.table-foot { margin-top: 9px; padding: 10px 2px; border-top: 1px solid var(--line); }
+			.simulator { margin-top: 24px; padding: 18px; }
+			.simulator-fields { grid-template-columns: 1fr 1fr; gap: 12px; }
+			.simulator-result { grid-column: 1 / -1; }
 		}
 		@media (max-width: 390px) {
 			main { padding-right: 13px; padding-left: 13px; }
@@ -179,6 +196,8 @@
 			.course-row { grid-template-columns: minmax(0, 1fr) 56px 58px 25px; gap: 5px; padding: 10px; }
 			.grade-input { width: 52px; }
 			.credits-input { width: 48px; }
+			.simulator-fields { grid-template-columns: 1fr; }
+			.simulator-result { grid-column: auto; }
 		}
 	</style>
 </head>
@@ -192,7 +211,7 @@
 			<p class="term-label">Il tuo spazio</p>
 			<nav class="nav-list">
 				<a class="nav-link active" href="#dashboard"><span class="nav-icon" aria-hidden="true">⌂</span>Panoramica</a>
-				<a class="nav-link" href="#corsi"><span class="nav-icon" aria-hidden="true">▤</span>I miei corsi</a>
+				<a class="nav-link" href="#corsi"><span class="nav-icon" aria-hidden="true">▤</span>I miei esami</a>
 				<a class="nav-link" href="#media"><span class="nav-icon" aria-hidden="true">◷</span>Media</a>
 			</nav>
 			<div class="sidebar-bottom">
@@ -216,21 +235,21 @@
 						<h1 id="page-title">Buono studio.</h1>
 						<p class="subtitle">Tieni il filo dei tuoi corsi, un esame alla volta.</p>
 					</div>
-					<button class="primary-button" id="open-modal" type="button"><span class="plus" aria-hidden="true">+</span> Aggiungi corso</button>
+					<button class="primary-button" id="open-modal" type="button"><span class="plus" aria-hidden="true">+</span> Aggiungi esame</button>
 				</section>
 
 				<section class="overview" id="media" aria-label="Riepilogo accademico">
 					<article class="average-card">
 						<div class="average-copy">
-							<p>La tua media ponderata</p>
-							<h2>Un passo alla volta</h2>
-							<small>Calcolata in base ai CFU degli esami con voto</small>
+							<p>Risultati accademici</p>
+							<h2>La tua media ponderata</h2>
+							<small>Calcolata sui CFU degli esami superati</small>
 						</div>
 						<div class="average-number"><strong id="average-value">—</strong><span>su 30</span></div>
 					</article>
 					<article class="credits-card">
 						<div>
-							<span class="credits-label">CFU registrati</span>
+							<span class="credits-label">CFU acquisiti</span>
 							<div class="credits-value"><span id="credits-value">0</span> <small>/ 180 CFU</small></div>
 						</div>
 						<div>
@@ -238,19 +257,35 @@
 							<div class="progress-caption"><span>Avanzamento percorso</span><span id="progress-label">0%</span></div>
 						</div>
 					</article>
+					<article class="stat-card">
+						<span class="credits-label">Media aritmetica</span>
+						<div class="credits-value" id="arithmetic-average">—</div>
+						<span class="stat-note">Tutti gli esami superati</span>
+					</article>
 				</section>
 
 				<section id="corsi" aria-labelledby="courses-title">
 					<div class="section-heading">
-						<h2 id="courses-title">I tuoi corsi</h2>
+						<h2 id="courses-title">I tuoi esami</h2>
 						<span class="course-count" id="course-count">0 corsi</span>
 					</div>
-					<div class="course-table" role="table" aria-label="Elenco dei corsi">
+					<div class="course-table" role="table" aria-label="Elenco degli esami">
 						<div class="table-head" role="row">
-							<span role="columnheader">Corso</span><span role="columnheader">Area</span><span role="columnheader">Voto / 30</span><span role="columnheader">CFU</span><span role="columnheader" aria-label="Azioni"></span>
+							<span role="columnheader">Esame</span><span role="columnheader">Area</span><span role="columnheader">Voto / 30L</span><span role="columnheader">CFU</span><span role="columnheader" aria-label="Azioni"></span>
 						</div>
 						<div id="course-list" role="rowgroup"></div>
 						<div class="table-foot"><span>Media ponderata</span><strong id="table-average">—</strong></div>
+					</div>
+				</section>
+
+				<section class="simulator" aria-labelledby="simulator-title">
+					<div class="simulator-header">
+						<div><h2 id="simulator-title">Simula il prossimo esame</h2><p>Scopri quale media ponderata otterresti con un nuovo voto.</p></div>
+					</div>
+					<div class="simulator-fields">
+						<div class="field"><label for="simulator-credits">CFU dell'esame</label><input id="simulator-credits" type="number" min="1" max="30" value="6"></div>
+						<div class="field"><label for="simulator-grade">Voto ipotetico</label><select id="simulator-grade"></select></div>
+						<div class="simulator-result"><span>Media ponderata prevista</span><strong id="simulator-average">—</strong></div>
 					</div>
 				</section>
 			</div>
@@ -260,16 +295,16 @@
 	<div class="modal-backdrop" id="course-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
 		<form class="modal" id="course-form">
 			<div class="modal-heading">
-				<div><h2 id="modal-title">Aggiungi un corso</h2><p class="modal-intro">Inserisci i dettagli dell'insegnamento.</p></div>
+						<div><h2 id="modal-title">Aggiungi un esame</h2><p class="modal-intro">Inserisci i dettagli dell'insegnamento.</p></div>
 				<button class="close-button" id="close-modal" type="button" aria-label="Chiudi">×</button>
 			</div>
 			<div class="field"><label for="course-name">Nome del corso</label><input id="course-name" name="name" placeholder="es. Analisi matematica" required maxlength="60"></div>
 			<div class="field"><label for="course-area">Area disciplinare</label><input id="course-area" name="area" placeholder="es. Matematica" maxlength="40"></div>
 			<div class="form-grid">
-				<div class="field"><label for="course-grade">Voto (facoltativo)</label><input id="course-grade" name="grade" type="number" min="18" max="30" placeholder="—"></div>
+				<div class="field"><label for="course-grade">Voto (18–30L)</label><input id="course-grade" name="grade" type="text" inputmode="numeric" pattern="(1[89]|2[0-9]|30)[lL]?" placeholder="es. 27 o 30L" required></div>
 				<div class="field"><label for="course-credits">CFU</label><input id="course-credits" name="credits" type="number" min="1" max="30" value="6" required></div>
 			</div>
-			<div class="modal-actions"><button class="secondary-button" id="cancel-modal" type="button">Annulla</button><button class="primary-button" type="submit">Aggiungi corso</button></div>
+				<div class="modal-actions"><button class="secondary-button" id="cancel-modal" type="button">Annulla</button><button class="primary-button" type="submit">Aggiungi esame</button></div>
 		</form>
 	</div>
 
@@ -300,6 +335,18 @@
 			}
 		}
 
+		function numericGrade(value) {
+			if (value === null || value === undefined || value === "") return null;
+			const normalized = String(value).trim().toUpperCase();
+			if (normalized === "30L") return 30;
+			const grade = Number(normalized);
+			return Number.isInteger(grade) && grade >= 18 && grade <= 30 ? grade : null;
+		}
+
+		function formatAverage(value) {
+			return value === null ? "—" : value.toFixed(2).replace(".", ",");
+		}
+
 		function renderCourses() {
 			const list = document.getElementById("course-list");
 			list.replaceChildren();
@@ -325,7 +372,7 @@
 				const title = document.createElement("strong");
 				title.textContent = course.name;
 				const sub = document.createElement("small");
-				sub.textContent = "Insegnamento";
+				sub.textContent = "Esame";
 				name.append(dot, Object.assign(document.createElement("span"), { className: "course-title-wrap" }));
 				name.lastElementChild.append(title, sub);
 
@@ -336,21 +383,22 @@
 
 				const grade = document.createElement("input");
 				grade.className = "grade-input";
-				grade.type = "number";
-				grade.min = "18";
-				grade.max = "30";
-				grade.step = "1";
+				grade.type = "text";
+				grade.inputMode = "numeric";
+				grade.maxLength = 3;
 				grade.placeholder = "—";
 				grade.value = course.grade ?? "";
 				grade.setAttribute("aria-label", `Voto per ${course.name}`);
 				grade.setAttribute("role", "cell");
 				grade.addEventListener("change", () => {
-					const value = grade.value === "" ? null : Number(grade.value);
-					if (value !== null && (value < 18 || value > 30)) {
+					const inputValue = grade.value.trim().toUpperCase();
+					const value = numericGrade(inputValue);
+					if (inputValue !== "" && value === null) {
 						grade.value = course.grade ?? "";
 						return;
 					}
-					course.grade = value;
+					course.grade = inputValue === "30L" ? "30L" : value;
+					grade.value = course.grade ?? "";
 					saveCourses();
 					updateSummary();
 				});
@@ -379,7 +427,7 @@
 				remove.className = "row-action";
 				remove.type = "button";
 				remove.textContent = "×";
-				remove.setAttribute("aria-label", `Rimuovi ${course.name}`);
+				remove.setAttribute("aria-label", `Rimuovi esame ${course.name}`);
 				remove.addEventListener("click", () => {
 					courses = courses.filter((item) => item.id !== course.id);
 					saveCourses();
@@ -390,26 +438,39 @@
 				list.append(row);
 			});
 
-			document.getElementById("course-count").textContent = `${courses.length} ${courses.length === 1 ? "corso" : "corsi"}`;
+			document.getElementById("course-count").textContent = `${courses.length} ${courses.length === 1 ? "esame" : "esami"}`;
 			updateSummary();
 		}
 
 		function updateSummary() {
-			const creditsTotal = courses.reduce((sum, course) => sum + Number(course.credits), 0);
-			const gradedCourses = courses.filter((course) => Number.isFinite(Number(course.grade)) && course.grade !== null);
+			const gradedCourses = courses.filter((course) => numericGrade(course.grade) !== null);
+			const creditsTotal = gradedCourses.reduce((sum, course) => sum + Number(course.credits), 0);
 			const gradedCredits = gradedCourses.reduce((sum, course) => sum + Number(course.credits), 0);
 			const weightedAverage = gradedCredits
-				? gradedCourses.reduce((sum, course) => sum + Number(course.grade) * Number(course.credits), 0) / gradedCredits
+				? gradedCourses.reduce((sum, course) => sum + numericGrade(course.grade) * Number(course.credits), 0) / gradedCredits
 				: null;
-			const formattedAverage = weightedAverage === null ? "—" : weightedAverage.toFixed(2).replace(".", ",");
+			const arithmeticAverage = gradedCourses.length
+				? gradedCourses.reduce((sum, course) => sum + numericGrade(course.grade), 0) / gradedCourses.length
+				: null;
+			const formattedAverage = formatAverage(weightedAverage);
 			const progress = Math.min(100, Math.round((creditsTotal / 180) * 100));
 
 			document.getElementById("average-value").textContent = formattedAverage;
 			document.getElementById("table-average").textContent = weightedAverage === null ? "Ancora nessun voto" : `${formattedAverage} / 30`;
+			document.getElementById("arithmetic-average").textContent = formatAverage(arithmeticAverage);
 			document.getElementById("credits-value").textContent = creditsTotal;
 			document.getElementById("progress-label").textContent = `${progress}%`;
 			document.getElementById("progress-fill").style.width = `${progress}%`;
 			document.querySelector("[role='progressbar']").setAttribute("aria-valuenow", String(Math.min(creditsTotal, 180)));
+
+			const simulatedCredits = Number(document.getElementById("simulator-credits").value);
+			const simulatedGrade = numericGrade(document.getElementById("simulator-grade").value);
+			const weightedPoints = gradedCourses.reduce((sum, course) => sum + numericGrade(course.grade) * Number(course.credits), 0);
+			const projectedCredits = gradedCredits + simulatedCredits;
+			const projectedAverage = Number.isInteger(simulatedCredits) && simulatedCredits >= 1 && simulatedCredits <= 30 && projectedCredits > 0
+				? (weightedPoints + simulatedGrade * simulatedCredits) / projectedCredits
+				: null;
+			document.getElementById("simulator-average").textContent = formatAverage(projectedAverage);
 		}
 
 		const modal = document.getElementById("course-modal");
@@ -435,15 +496,16 @@
 		form.addEventListener("submit", (event) => {
 			event.preventDefault();
 			const data = new FormData(form);
-			const gradeValue = data.get("grade");
-			const grade = gradeValue === "" ? null : Number(gradeValue);
-			if (grade !== null && (grade < 18 || grade > 30)) return;
+			const gradeValue = String(data.get("grade")).trim().toUpperCase();
+			const numericValue = numericGrade(gradeValue);
+			const name = String(data.get("name")).trim();
+			if (!name || numericValue === null) return;
 
 			courses.push({
 				id: Date.now(),
-				name: String(data.get("name")).trim(),
+				name,
 				area: String(data.get("area")).trim() || "Altro",
-				grade,
+				grade: gradeValue === "30L" ? "30L" : numericValue,
 				credits: Number(data.get("credits"))
 			});
 			saveCourses();
@@ -452,6 +514,21 @@
 			document.getElementById("course-credits").value = 6;
 			closeModal();
 		});
+
+		const simulatorGrade = document.getElementById("simulator-grade");
+		for (let grade = 18; grade <= 30; grade += 1) {
+			const option = document.createElement("option");
+			option.value = String(grade);
+			option.textContent = String(grade);
+			simulatorGrade.append(option);
+		}
+		const honorsOption = document.createElement("option");
+		honorsOption.value = "30L";
+		honorsOption.textContent = "30L";
+		simulatorGrade.append(honorsOption);
+		simulatorGrade.value = "27";
+		simulatorGrade.addEventListener("change", updateSummary);
+		document.getElementById("simulator-credits").addEventListener("input", updateSummary);
 
 		renderCourses();
 	</script>
