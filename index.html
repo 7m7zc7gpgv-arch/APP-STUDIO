@@ -114,6 +114,19 @@
 		.course-name strong { display: block; overflow: hidden; font-size: 13px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
 		.course-name small { display: block; margin-top: 2px; color: var(--muted); font-size: 11px; }
 		.course-area { overflow: hidden; color: #637069; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+		.planned-form { display: grid; grid-template-columns: minmax(180px, 1.5fr) minmax(180px, 1fr) 100px auto; align-items: end; gap: 12px; margin: 0 0 16px; padding: 18px; border: 1px solid var(--line); border-radius: 7px; background: var(--white); }
+		.planned-form .field { margin: 0; }
+		.planned-form input, .planned-form select { width: 100%; height: 40px; padding: 0 11px; border: 1px solid var(--line); border-radius: 4px; background: #fff; color: var(--ink); font: inherit; }
+		.planned-list { display: grid; gap: 8px; }
+		.planned-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 72px; padding: 12px 16px; border: 1px solid var(--line); border-radius: 6px; background: var(--white); }
+		.planned-name { min-width: 0; }
+		.planned-name strong { display: block; overflow: hidden; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+		.planned-name span { display: block; margin-top: 3px; color: var(--muted); font-size: 11px; }
+		.planned-actions { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+		.planned-credits { color: var(--muted); font-size: 12px; white-space: nowrap; }
+		.planned-actions .primary-button { min-height: 36px; }
+		.planned-remove { display: grid; width: 30px; height: 30px; place-items: center; border: 0; border-radius: 4px; background: transparent; color: #87918a; font-size: 17px; }
+		.planned-remove:hover { background: #f7e9e3; color: #b64e35; }
 		.grade-input, .credits-input { width: 66px; height: 34px; padding: 0 8px; border: 1px solid var(--line); border-radius: 4px; background: #fff; color: var(--ink); text-align: center; }
 		.grade-input:focus, .credits-input:focus, .field input:focus { outline: 2px solid #9db9a8; outline-offset: 1px; }
 		.credits-input { width: 58px; }
@@ -126,6 +139,7 @@
 		.modal-backdrop { position: fixed; z-index: 5; inset: 0; display: none; align-items: center; justify-content: center; padding: 18px; background: #17241f8c; }
 		.modal-backdrop.open { display: flex; }
 		.modal { width: min(100%, 420px); padding: 25px; border-radius: 7px; background: var(--white); box-shadow: 0 18px 60px #10201833; }
+		.modal select { width: 100%; height: 40px; padding: 0 11px; border: 1px solid var(--line); border-radius: 4px; background: #fff; color: var(--ink); font: inherit; }
 		.modal-heading { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; }
 		.modal h2 { margin: 0; font: 25px var(--serif); }
 		.modal-intro { margin: 5px 0 0; color: var(--muted); font-size: 12px; }
@@ -188,6 +202,10 @@
 			.simulator { margin-top: 24px; padding: 18px; }
 			.simulator-fields { grid-template-columns: 1fr 1fr; gap: 12px; }
 			.simulator-result { grid-column: 1 / -1; }
+			.planned-form { grid-template-columns: 1fr 1fr; padding: 14px; }
+			.planned-form .primary-button { width: auto; min-width: 0; grid-column: 1 / -1; font-size: 12px; }
+			.planned-actions { gap: 6px; }
+			.planned-actions .primary-button { width: auto; min-width: 0; padding: 0 9px; font-size: 11px; }
 		}
 		@media (max-width: 390px) {
 			main { padding-right: 13px; padding-left: 13px; }
@@ -199,6 +217,8 @@
 			.credits-input { width: 48px; }
 			.simulator-fields { grid-template-columns: 1fr; }
 			.simulator-result { grid-column: auto; }
+			.planned-row { align-items: flex-start; flex-direction: column; gap: 10px; }
+			.planned-actions { width: 100%; justify-content: space-between; }
 		}
 	</style>
 </head>
@@ -213,6 +233,7 @@
 			<nav class="nav-list">
 				<a class="nav-link active" href="#dashboard"><span class="nav-icon" aria-hidden="true">⌂</span>Panoramica</a>
 				<a class="nav-link" href="#corsi"><span class="nav-icon" aria-hidden="true">▤</span>I miei esami</a>
+				<a class="nav-link" href="#piano"><span class="nav-icon" aria-hidden="true">＋</span>Piano di studi</a>
 				<a class="nav-link" href="#media"><span class="nav-icon" aria-hidden="true">◷</span>Media</a>
 			</nav>
 			<div class="sidebar-bottom">
@@ -267,7 +288,7 @@
 
 				<section id="corsi" aria-labelledby="courses-title">
 					<div class="section-heading">
-						<h2 id="courses-title">I tuoi esami</h2>
+						<h2 id="courses-title">Libretto esami superati</h2>
 						<span class="course-count" id="course-count">0 corsi</span>
 					</div>
 					<div class="course-table" role="table" aria-label="Elenco degli esami">
@@ -277,6 +298,26 @@
 						<div id="course-list" role="rowgroup"></div>
 						<div class="table-foot"><span>Media ponderata</span><strong id="table-average">—</strong></div>
 					</div>
+				</section>
+
+				<section id="piano" aria-labelledby="plan-title" style="margin-top: 32px">
+					<div class="section-heading">
+						<h2 id="plan-title">Piano di studi / Esami mancanti</h2>
+						<span class="course-count" id="planned-count">0 esami</span>
+					</div>
+					<form class="planned-form" id="planned-form">
+						<div class="field"><label for="planned-name">Nome corso</label><input id="planned-name" name="name" placeholder="es. Analisi matematica II" maxlength="60" required></div>
+						<div class="field"><label for="planned-period">Anno / Semestre</label><select id="planned-period" name="period" required>
+							<option value="1° anno · 1° semestre">1° anno · 1° semestre</option><option value="1° anno · 2° semestre">1° anno · 2° semestre</option>
+							<option value="2° anno · 1° semestre">2° anno · 1° semestre</option><option value="2° anno · 2° semestre">2° anno · 2° semestre</option>
+							<option value="3° anno · 1° semestre">3° anno · 1° semestre</option><option value="3° anno · 2° semestre">3° anno · 2° semestre</option>
+							<option value="4° anno · 1° semestre">4° anno · 1° semestre</option><option value="4° anno · 2° semestre">4° anno · 2° semestre</option>
+							<option value="5° anno · 1° semestre">5° anno · 1° semestre</option><option value="5° anno · 2° semestre">5° anno · 2° semestre</option>
+						</select></div>
+						<div class="field"><label for="planned-credits">CFU</label><input id="planned-credits" name="credits" type="number" min="1" max="30" value="6" required></div>
+						<button class="primary-button" type="submit"><span class="plus" aria-hidden="true">+</span>Aggiungi al piano</button>
+					</form>
+					<div class="planned-list" id="planned-list"></div>
 				</section>
 
 				<section class="simulator" aria-labelledby="simulator-title">
@@ -311,6 +352,19 @@
 		</form>
 	</div>
 
+	<div class="modal-backdrop" id="pass-modal" role="dialog" aria-modal="true" aria-labelledby="pass-modal-title">
+		<form class="modal" id="pass-form">
+			<div class="modal-heading">
+				<div><h2 id="pass-modal-title">Segna come superato</h2><p class="modal-intro" id="pass-course-name"></p></div>
+				<button class="close-button" id="close-pass-modal" type="button" aria-label="Chiudi">×</button>
+			</div>
+			<div class="field"><label for="pass-assessment-type">Tipologia di valutazione</label><select id="pass-assessment-type" name="assessmentType"><option value="grade">Voto in trentesimi</option><option value="eligibility">Idoneo</option></select></div>
+			<div class="field" id="pass-grade-field"><label for="pass-grade">Voto (18–30L)</label><input id="pass-grade" name="grade" type="text" inputmode="numeric" pattern="(1[89]|2[0-9]|30)[lL]?" placeholder="es. 27 o 30L" required></div>
+			<p class="modal-intro" id="pass-eligibility-note" hidden>Verrà registrato come Idoneo e i CFU saranno acquisiti.</p>
+			<div class="modal-actions"><button class="secondary-button" id="cancel-pass-modal" type="button">Annulla</button><button class="primary-button" type="submit">Conferma esame superato</button></div>
+		</form>
+	</div>
+
 	<script>
 		const starterCourses = [
 			{ id: 1, name: "Analisi matematica II", area: "Matematica", grade: 27, credits: 9 },
@@ -320,6 +374,8 @@
 			{ id: 5, name: "Elettrotecnica", area: "Ingegneria", grade: null, credits: 6 }
 		];
 		let courses = loadCourses();
+		let plannedCourses = loadPlannedCourses();
+		let selectedPlannedCourseId = null;
 
 		function loadCourses() {
 			try {
@@ -335,6 +391,24 @@
 				localStorage.setItem("quaderno-courses", JSON.stringify(courses));
 			} catch {
 				// L'app resta utilizzabile anche se il browser blocca la memorizzazione.
+			}
+		}
+
+		function loadPlannedCourses() {
+			try {
+				const saved = localStorage.getItem("quaderno-planned-courses");
+				const parsed = saved ? JSON.parse(saved) : [];
+				return Array.isArray(parsed) ? parsed : [];
+			} catch {
+				return [];
+			}
+		}
+
+		function savePlannedCourses() {
+			try {
+				localStorage.setItem("quaderno-planned-courses", JSON.stringify(plannedCourses));
+			} catch {
+				// Il piano resta modificabile durante la sessione anche se il browser blocca la memorizzazione.
 			}
 		}
 
@@ -454,11 +528,20 @@
 				remove.className = "row-action";
 				remove.type = "button";
 				remove.textContent = "×";
-				remove.setAttribute("aria-label", `Rimuovi esame ${course.name}`);
+				remove.setAttribute("aria-label", `Sposta ${course.name} tra gli esami mancanti`);
+				remove.title = "Sposta tra gli esami mancanti";
 				remove.addEventListener("click", () => {
+					plannedCourses.push({
+						id: Date.now(),
+						name: course.name,
+						period: course.period || "Da pianificare",
+						credits: Number(course.credits)
+					});
 					courses = courses.filter((item) => item.id !== course.id);
 					saveCourses();
+					savePlannedCourses();
 					renderCourses();
+					renderPlannedCourses();
 				});
 
 				row.append(name, area, result, credits, remove);
@@ -467,6 +550,56 @@
 
 			document.getElementById("course-count").textContent = `${courses.length} ${courses.length === 1 ? "esame" : "esami"}`;
 			updateSummary();
+		}
+
+		function renderPlannedCourses() {
+			const list = document.getElementById("planned-list");
+			list.replaceChildren();
+
+			if (plannedCourses.length === 0) {
+				const empty = document.createElement("p");
+				empty.className = "empty-state";
+				empty.textContent = "Nessun esame in programma.";
+				list.append(empty);
+			}
+
+			plannedCourses.forEach((course) => {
+				const row = document.createElement("article");
+				row.className = "planned-row";
+				const name = document.createElement("div");
+				name.className = "planned-name";
+				const title = document.createElement("strong");
+				title.textContent = course.name;
+				const period = document.createElement("span");
+				period.textContent = course.period;
+				name.append(title, period);
+
+				const actions = document.createElement("div");
+				actions.className = "planned-actions";
+				const credits = document.createElement("span");
+				credits.className = "planned-credits";
+				credits.textContent = `${course.credits} CFU`;
+				const complete = document.createElement("button");
+				complete.className = "primary-button";
+				complete.type = "button";
+				complete.textContent = "Segna come Superato";
+				complete.addEventListener("click", () => openPassModal(course));
+				const remove = document.createElement("button");
+				remove.className = "planned-remove";
+				remove.type = "button";
+				remove.textContent = "×";
+				remove.setAttribute("aria-label", `Rimuovi ${course.name} dal piano`);
+				remove.addEventListener("click", () => {
+					plannedCourses = plannedCourses.filter((item) => item.id !== course.id);
+					savePlannedCourses();
+					renderPlannedCourses();
+				});
+				actions.append(credits, complete, remove);
+				row.append(name, actions);
+				list.append(row);
+			});
+
+			document.getElementById("planned-count").textContent = `${plannedCourses.length} ${plannedCourses.length === 1 ? "esame" : "esami"}`;
 		}
 
 		function updateSummary() {
@@ -509,6 +642,12 @@
 		const gradeField = document.getElementById("grade-field");
 		const eligibilityField = document.getElementById("eligibility-field");
 		const gradeInput = document.getElementById("course-grade");
+		const passModal = document.getElementById("pass-modal");
+		const passForm = document.getElementById("pass-form");
+		const passAssessmentType = document.getElementById("pass-assessment-type");
+		const passGradeField = document.getElementById("pass-grade-field");
+		const passGradeInput = document.getElementById("pass-grade");
+		const passEligibilityNote = document.getElementById("pass-eligibility-note");
 
 		function syncAssessmentFields() {
 			const eligibilitySelected = assessmentType.value === "eligibility";
@@ -518,6 +657,62 @@
 		}
 
 		assessmentType.addEventListener("change", syncAssessmentFields);
+
+		function syncPassFields() {
+			const isEligibility = passAssessmentType.value === "eligibility";
+			passGradeField.hidden = isEligibility;
+			passGradeInput.required = !isEligibility;
+			passEligibilityNote.hidden = !isEligibility;
+		}
+
+		function openPassModal(course) {
+			selectedPlannedCourseId = course.id;
+			document.getElementById("pass-course-name").textContent = `${course.name} · ${course.credits} CFU`;
+			passForm.reset();
+			syncPassFields();
+			passModal.classList.add("open");
+			if (passAssessmentType.value === "grade") passGradeInput.focus();
+		}
+
+		function closePassModal() {
+			passModal.classList.remove("open");
+			selectedPlannedCourseId = null;
+		}
+
+		passAssessmentType.addEventListener("change", syncPassFields);
+		document.getElementById("close-pass-modal").addEventListener("click", closePassModal);
+		document.getElementById("cancel-pass-modal").addEventListener("click", closePassModal);
+		passModal.addEventListener("click", (event) => {
+			if (event.target === passModal) closePassModal();
+		});
+		passForm.addEventListener("submit", (event) => {
+			event.preventDefault();
+			const plannedCourse = plannedCourses.find((course) => course.id === selectedPlannedCourseId);
+			if (!plannedCourse) return;
+
+			const data = new FormData(passForm);
+			const selectedAssessmentType = String(data.get("assessmentType"));
+			const gradeValue = String(data.get("grade") ?? "").trim().toUpperCase();
+			const value = numericGrade(gradeValue);
+			if (selectedAssessmentType === "grade" && value === null) return;
+
+			courses.push({
+				id: Date.now(),
+				name: plannedCourse.name,
+				area: "Piano di studi",
+				period: plannedCourse.period,
+				assessmentType: selectedAssessmentType,
+				grade: selectedAssessmentType === "grade" ? (gradeValue === "30L" ? "30L" : value) : null,
+				eligibilityStatus: selectedAssessmentType === "eligibility" ? "passed" : null,
+				credits: Number(plannedCourse.credits)
+			});
+			plannedCourses = plannedCourses.filter((course) => course.id !== plannedCourse.id);
+			saveCourses();
+			savePlannedCourses();
+			renderCourses();
+			renderPlannedCourses();
+			closePassModal();
+		});
 
 		function closeModal() {
 			modal.classList.remove("open");
@@ -534,6 +729,26 @@
 		});
 		document.addEventListener("keydown", (event) => {
 			if (event.key === "Escape") closeModal();
+			if (event.key === "Escape") closePassModal();
+		});
+
+		document.getElementById("planned-form").addEventListener("submit", (event) => {
+			event.preventDefault();
+			const data = new FormData(event.currentTarget);
+			const name = String(data.get("name")).trim();
+			const credits = Number(data.get("credits"));
+			if (!name || !Number.isInteger(credits) || credits < 1 || credits > 30) return;
+
+			plannedCourses.push({
+				id: Date.now(),
+				name,
+				period: String(data.get("period")),
+				credits
+			});
+			savePlannedCourses();
+			renderPlannedCourses();
+			event.currentTarget.reset();
+			document.getElementById("planned-credits").value = 6;
 		});
 
 		form.addEventListener("submit", (event) => {
@@ -578,6 +793,7 @@
 		document.getElementById("simulator-credits").addEventListener("input", updateSummary);
 
 		renderCourses();
+		renderPlannedCourses();
 	</script>
 </body>
 </html>
