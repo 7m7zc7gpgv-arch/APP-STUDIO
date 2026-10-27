@@ -131,6 +131,7 @@
 		.modal-intro { margin: 5px 0 0; color: var(--muted); font-size: 12px; }
 		.close-button { width: 30px; height: 30px; border: 0; border-radius: 4px; background: transparent; color: var(--muted); font-size: 21px; }
 		.field { display: grid; gap: 6px; margin-bottom: 14px; }
+		.field[hidden] { display: none; }
 		.field label { color: #56625b; font-size: 12px; font-weight: 700; }
 		.field input { width: 100%; height: 40px; padding: 0 11px; border: 1px solid var(--line); border-radius: 4px; background: #fff; color: var(--ink); }
 		.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -271,7 +272,7 @@
 					</div>
 					<div class="course-table" role="table" aria-label="Elenco degli esami">
 						<div class="table-head" role="row">
-							<span role="columnheader">Esame</span><span role="columnheader">Area</span><span role="columnheader">Voto / 30L</span><span role="columnheader">CFU</span><span role="columnheader" aria-label="Azioni"></span>
+							<span role="columnheader">Esame</span><span role="columnheader">Area</span><span role="columnheader">Valutazione</span><span role="columnheader">CFU</span><span role="columnheader" aria-label="Azioni"></span>
 						</div>
 						<div id="course-list" role="rowgroup"></div>
 						<div class="table-foot"><span>Media ponderata</span><strong id="table-average">—</strong></div>
@@ -300,10 +301,12 @@
 			</div>
 			<div class="field"><label for="course-name">Nome del corso</label><input id="course-name" name="name" placeholder="es. Analisi matematica" required maxlength="60"></div>
 			<div class="field"><label for="course-area">Area disciplinare</label><input id="course-area" name="area" placeholder="es. Matematica" maxlength="40"></div>
+			<div class="field"><label for="assessment-type">Tipologia di valutazione</label><select id="assessment-type" name="assessmentType"><option value="grade">Voto in trentesimi</option><option value="eligibility">Idoneità</option></select></div>
 			<div class="form-grid">
-				<div class="field"><label for="course-grade">Voto (18–30L)</label><input id="course-grade" name="grade" type="text" inputmode="numeric" pattern="(1[89]|2[0-9]|30)[lL]?" placeholder="es. 27 o 30L" required></div>
-				<div class="field"><label for="course-credits">CFU</label><input id="course-credits" name="credits" type="number" min="1" max="30" value="6" required></div>
+				<div class="field" id="grade-field"><label for="course-grade">Voto (18–30L)</label><input id="course-grade" name="grade" type="text" inputmode="numeric" pattern="(1[89]|2[0-9]|30)[lL]?" placeholder="es. 27 o 30L" required></div>
+				<div class="field" id="eligibility-field" hidden><label for="eligibility-status">Esito</label><select id="eligibility-status" name="eligibilityStatus"><option value="passed">Idoneo</option><option value="failed">Non Idoneo</option></select></div>
 			</div>
+			<div class="field"><label for="course-credits">CFU</label><input id="course-credits" name="credits" type="number" min="1" max="30" value="6" required></div>
 				<div class="modal-actions"><button class="secondary-button" id="cancel-modal" type="button">Annulla</button><button class="primary-button" type="submit">Aggiungi esame</button></div>
 		</form>
 	</div>
@@ -347,6 +350,10 @@
 			return value === null ? "—" : value.toFixed(2).replace(".", ",");
 		}
 
+		function isEligibility(course) {
+			return course.assessmentType === "eligibility";
+		}
+
 		function renderCourses() {
 			const list = document.getElementById("course-list");
 			list.replaceChildren();
@@ -372,7 +379,7 @@
 				const title = document.createElement("strong");
 				title.textContent = course.name;
 				const sub = document.createElement("small");
-				sub.textContent = "Esame";
+				sub.textContent = isEligibility(course) ? "Idoneità" : "Voto in trentesimi";
 				name.append(dot, Object.assign(document.createElement("span"), { className: "course-title-wrap" }));
 				name.lastElementChild.append(title, sub);
 
@@ -381,27 +388,47 @@
 				area.setAttribute("role", "cell");
 				area.textContent = course.area || "—";
 
-				const grade = document.createElement("input");
-				grade.className = "grade-input";
-				grade.type = "text";
-				grade.inputMode = "numeric";
-				grade.maxLength = 3;
-				grade.placeholder = "—";
-				grade.value = course.grade ?? "";
-				grade.setAttribute("aria-label", `Voto per ${course.name}`);
-				grade.setAttribute("role", "cell");
-				grade.addEventListener("change", () => {
-					const inputValue = grade.value.trim().toUpperCase();
-					const value = numericGrade(inputValue);
-					if (inputValue !== "" && value === null) {
-						grade.value = course.grade ?? "";
-						return;
-					}
-					course.grade = inputValue === "30L" ? "30L" : value;
-					grade.value = course.grade ?? "";
-					saveCourses();
-					updateSummary();
-				});
+				let result;
+				if (isEligibility(course)) {
+					result = document.createElement("select");
+					result.className = "grade-input";
+					result.setAttribute("aria-label", `Esito idoneità per ${course.name}`);
+					result.setAttribute("role", "cell");
+					[{ value: "passed", label: "Idoneo" }, { value: "failed", label: "Non Idoneo" }].forEach((item) => {
+						const option = document.createElement("option");
+						option.value = item.value;
+						option.textContent = item.label;
+						result.append(option);
+					});
+					result.value = course.eligibilityStatus === "passed" ? "passed" : "failed";
+					result.addEventListener("change", () => {
+						course.eligibilityStatus = result.value;
+						saveCourses();
+						updateSummary();
+					});
+				} else {
+					result = document.createElement("input");
+					result.className = "grade-input";
+					result.type = "text";
+					result.inputMode = "numeric";
+					result.maxLength = 3;
+					result.placeholder = "—";
+					result.value = course.grade ?? "";
+					result.setAttribute("aria-label", `Voto per ${course.name}`);
+					result.setAttribute("role", "cell");
+					result.addEventListener("change", () => {
+						const inputValue = result.value.trim().toUpperCase();
+						const value = numericGrade(inputValue);
+						if (inputValue !== "" && value === null) {
+							result.value = course.grade ?? "";
+							return;
+						}
+						course.grade = inputValue === "30L" ? "30L" : value;
+						result.value = course.grade ?? "";
+						saveCourses();
+						updateSummary();
+					});
+				}
 
 				const credits = document.createElement("input");
 				credits.className = "credits-input";
@@ -434,7 +461,7 @@
 					renderCourses();
 				});
 
-				row.append(name, area, grade, credits, remove);
+				row.append(name, area, result, credits, remove);
 				list.append(row);
 			});
 
@@ -443,8 +470,11 @@
 		}
 
 		function updateSummary() {
-			const gradedCourses = courses.filter((course) => numericGrade(course.grade) !== null);
-			const creditsTotal = gradedCourses.reduce((sum, course) => sum + Number(course.credits), 0);
+			const gradedCourses = courses.filter((course) => !isEligibility(course) && numericGrade(course.grade) !== null);
+			const passedCourses = courses.filter((course) => isEligibility(course)
+				? course.eligibilityStatus === "passed"
+				: numericGrade(course.grade) !== null);
+			const creditsTotal = passedCourses.reduce((sum, course) => sum + Number(course.credits), 0);
 			const gradedCredits = gradedCourses.reduce((sum, course) => sum + Number(course.credits), 0);
 			const weightedAverage = gradedCredits
 				? gradedCourses.reduce((sum, course) => sum + numericGrade(course.grade) * Number(course.credits), 0) / gradedCredits
@@ -475,6 +505,19 @@
 
 		const modal = document.getElementById("course-modal");
 		const form = document.getElementById("course-form");
+		const assessmentType = document.getElementById("assessment-type");
+		const gradeField = document.getElementById("grade-field");
+		const eligibilityField = document.getElementById("eligibility-field");
+		const gradeInput = document.getElementById("course-grade");
+
+		function syncAssessmentFields() {
+			const eligibilitySelected = assessmentType.value === "eligibility";
+			gradeField.hidden = eligibilitySelected;
+			eligibilityField.hidden = !eligibilitySelected;
+			gradeInput.required = !eligibilitySelected;
+		}
+
+		assessmentType.addEventListener("change", syncAssessmentFields);
 
 		function closeModal() {
 			modal.classList.remove("open");
@@ -496,21 +539,25 @@
 		form.addEventListener("submit", (event) => {
 			event.preventDefault();
 			const data = new FormData(form);
-			const gradeValue = String(data.get("grade")).trim().toUpperCase();
+			const selectedAssessmentType = String(data.get("assessmentType"));
+			const gradeValue = String(data.get("grade") ?? "").trim().toUpperCase();
 			const numericValue = numericGrade(gradeValue);
 			const name = String(data.get("name")).trim();
-			if (!name || numericValue === null) return;
+			if (!name || (selectedAssessmentType === "grade" && numericValue === null)) return;
 
 			courses.push({
 				id: Date.now(),
 				name,
 				area: String(data.get("area")).trim() || "Altro",
-				grade: gradeValue === "30L" ? "30L" : numericValue,
+				assessmentType: selectedAssessmentType,
+				grade: selectedAssessmentType === "grade" ? (gradeValue === "30L" ? "30L" : numericValue) : null,
+				eligibilityStatus: selectedAssessmentType === "eligibility" ? String(data.get("eligibilityStatus")) : null,
 				credits: Number(data.get("credits"))
 			});
 			saveCourses();
 			renderCourses();
 			form.reset();
+			syncAssessmentFields();
 			document.getElementById("course-credits").value = 6;
 			closeModal();
 		});
