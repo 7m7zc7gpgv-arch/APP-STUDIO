@@ -68,11 +68,17 @@
 
 		main { min-width: 0; padding: 0 52px 56px; }
 		.topbar { display: flex; min-height: 76px; align-items: center; justify-content: flex-end; border-bottom: 1px solid var(--line); }
+		.topbar-actions { display: flex; align-items: center; gap: 18px; }
 		.profile { display: flex; align-items: center; gap: 10px; color: #53615a; font-size: 13px; }
+		.settings-button { display: inline-flex; min-height: 36px; align-items: center; gap: 7px; padding: 0 11px; border: 1px solid var(--line); border-radius: 5px; background: var(--white); color: #53615a; font-size: 12px; }
+		.settings-button:hover { border-color: #b7c8bb; color: var(--green); }
 		.avatar { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 50%; background: #f0d7c6; color: #704b38; font: 14px var(--serif); }
 		.content { width: min(100%, 1120px); margin: 0 auto; }
 		.page-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; padding: 40px 0 28px; }
 		.eyebrow { margin: 0 0 7px; color: var(--orange); font-size: 11px; font-weight: 700; letter-spacing: 0; text-transform: uppercase; }
+		.academic-status { display: inline-flex; align-items: center; gap: 9px; margin: 4px 0 10px; padding: 7px 11px; border: 1px solid #d5e2d7; border-radius: 5px; background: #edf3ee; color: var(--green); font-size: 12px; }
+		.academic-status-label { color: #68786d; font-size: 10px; }
+		.academic-status strong { font-weight: 700; }
 		h1 { margin: 0; font: 42px/1.12 var(--serif); letter-spacing: 0; }
 		.subtitle { margin: 9px 0 0; color: var(--muted); }
 		.primary-button { display: inline-flex; min-height: 42px; align-items: center; gap: 8px; padding: 0 15px; border: 0; border-radius: 5px; background: var(--green); color: white; font-size: 13px; font-weight: 700; transition: background .18s ease, transform .18s ease; }
@@ -120,8 +126,12 @@
 		.planned-list { display: grid; gap: 8px; }
 		.planned-year { margin: 0 0 24px; }
 		.planned-year-heading { margin: 0 0 12px; padding-bottom: 8px; border-bottom: 1px solid var(--line); color: var(--green); font: 22px var(--serif); }
+		.planned-year-heading.is-current { color: #163f32; }
 		.planned-semester { margin: 0 0 18px; }
+		.planned-semester.is-current { padding: 12px; border: 1px solid #cddfd2; border-radius: 6px; background: #f0f5f0; }
 		.planned-semester-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 0 0 8px; color: #53615a; font-size: 13px; }
+		.planned-semester.is-current .planned-semester-heading { color: var(--green); }
+		.current-semester-badge { margin-left: auto; padding: 2px 7px; border-radius: 10px; background: #dcebe0; color: var(--green); font-size: 9px; font-weight: 700; white-space: nowrap; }
 		.semester-credits { color: var(--muted); font-size: 11px; font-weight: 400; white-space: nowrap; }
 		.semester-progress { height: 7px; margin: 0 0 5px; overflow: hidden; border-radius: 5px; background: #e1e6e1; }
 		.semester-progress-fill { width: 0; height: 100%; border-radius: inherit; background: #4c9870; transition: width .55s cubic-bezier(.2, .75, .25, 1); }
@@ -184,6 +194,9 @@
 			.nav-icon { font-size: 17px; }
 			main { padding: 0 18px 35px; }
 			.topbar { min-height: 58px; }
+			.topbar-actions { gap: 8px; }
+			.settings-button { width: 36px; min-height: 36px; justify-content: center; overflow: hidden; padding: 0; font-size: 0; }
+			.settings-button span { font-size: 17px; }
 			.page-heading { align-items: flex-start; padding: 28px 0 22px; }
 			h1 { font-size: 34px; }
 			.subtitle { font-size: 13px; }
@@ -227,6 +240,7 @@
 			.simulator-result { grid-column: auto; }
 			.planned-row { align-items: flex-start; flex-direction: column; gap: 10px; }
 			.planned-actions { width: 100%; justify-content: space-between; }
+			.academic-status { flex-wrap: wrap; }
 		}
 	</style>
 </head>
@@ -247,21 +261,25 @@
 			<div class="sidebar-bottom">
 				<div class="semester-card">
 					<span>Anno accademico</span>
-					<strong>2025 / 2026</strong>
-					<small>● &nbsp;Secondo semestre</small>
+					<strong id="sidebar-academic-year">2025 / 2026</strong>
+					<small id="sidebar-semester">● Secondo semestre</small>
 				</div>
 			</div>
 		</aside>
 
 		<main id="dashboard">
 			<header class="topbar">
-				<div class="profile"><span>Il mio spazio</span><span class="avatar" aria-hidden="true">M</span></div>
+				<div class="topbar-actions">
+					<button class="settings-button" id="open-settings" type="button" aria-label="Impostazioni"><span aria-hidden="true">⚙</span>Impostazioni</button>
+					<div class="profile"><span>Il mio spazio</span><span class="avatar" aria-hidden="true">M</span></div>
+				</div>
 			</header>
 
 			<div class="content">
 				<section class="page-heading" aria-labelledby="page-title">
 					<div>
-						<p class="eyebrow">Anno accademico 2025 / 2026</p>
+						<p class="eyebrow">Anno accademico <span id="current-academic-year">2025 / 2026</span></p>
+						<div class="academic-status" aria-live="polite"><span class="academic-status-label">Stato Attuale</span><strong id="current-academic-status">2° Anno - 1° Semestre</strong></div>
 						<h1 id="page-title">Buono studio.</h1>
 						<p class="subtitle">Tieni il filo dei tuoi corsi, un esame alla volta.</p>
 					</div>
@@ -371,6 +389,17 @@
 		</form>
 	</div>
 
+	<div class="modal-backdrop" id="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+		<form class="modal" id="settings-form">
+			<div class="modal-heading">
+				<div><h2 id="settings-title">Impostazioni carriera</h2><p class="modal-intro">Imposta il mese e l'anno di immatricolazione.</p></div>
+				<button class="close-button" id="close-settings" type="button" aria-label="Chiudi">×</button>
+			</div>
+			<div class="field"><label for="enrollment-start">Inizio carriera</label><input id="enrollment-start" name="enrollmentStart" type="month" required></div>
+			<div class="modal-actions"><button class="secondary-button" id="cancel-settings" type="button">Annulla</button><button class="primary-button" type="submit">Salva impostazioni</button></div>
+		</form>
+	</div>
+
 	<script>
 		const starterCourses = [
 			{ id: 1, name: "Analisi matematica II", area: "Matematica", grade: 27, credits: 9 },
@@ -379,9 +408,44 @@
 			{ id: 4, name: "Scienza delle costruzioni", area: "Ingegneria", grade: null, credits: 9 },
 			{ id: 5, name: "Elettrotecnica", area: "Ingegneria", grade: null, credits: 6 }
 		];
+		const defaultEnrollmentStart = "2025-10";
+		let enrollmentStart = loadEnrollmentStart();
 		let courses = loadCourses();
 		let plannedCourses = loadPlannedCourses();
 		let selectedPlannedCourseId = null;
+
+		function loadEnrollmentStart() {
+			try {
+				const saved = localStorage.getItem("quaderno-enrollment-start");
+				return saved && /^\d{4}-(0[1-9]|1[0-2])$/.test(saved) ? saved : defaultEnrollmentStart;
+			} catch {
+				return defaultEnrollmentStart;
+			}
+		}
+
+		function calculateAcademicStatus(date = new Date()) {
+			const [startYear, startMonth] = enrollmentStart.split("-").map(Number);
+			const currentYear = date.getFullYear();
+			const currentMonth = date.getMonth() + 1;
+			const elapsedYears = currentYear - startYear - (currentMonth < startMonth ? 1 : 0);
+			const courseYear = Math.max(1, elapsedYears + 1);
+			const semester = currentMonth >= 10 || currentMonth <= 2 ? "1° Semestre" : "2° Semestre";
+			const academicYearStart = currentMonth >= 10 ? currentYear : currentYear - 1;
+
+			return {
+				year: courseYear > 5 ? "Fuori Corso" : `${courseYear}° Anno`,
+				semester,
+				academicYear: `${academicYearStart} / ${academicYearStart + 1}`
+			};
+		}
+
+		function renderAcademicStatus() {
+			const status = calculateAcademicStatus();
+			document.getElementById("current-academic-status").textContent = `${status.year} - ${status.semester}`;
+			document.getElementById("current-academic-year").textContent = status.academicYear;
+			document.getElementById("sidebar-academic-year").textContent = status.academicYear;
+			document.getElementById("sidebar-semester").textContent = `● ${status.semester}`;
+		}
 
 		function loadCourses() {
 			try {
@@ -595,8 +659,9 @@
 
 			const yearOrder = ["1° Anno", "2° Anno", "3° Anno", "4° Anno", "5° Anno", "Fuori Corso"];
 			const semesterOrder = ["1° Semestre", "2° Semestre"];
+			const currentStatus = calculateAcademicStatus();
 			const groupedCourses = [...plannedCourses, ...courses.filter((course) => course.year && course.semester)];
-			const years = [...new Set(groupedCourses.map((course) => course.year))]
+			const years = [...new Set([...groupedCourses.map((course) => course.year), currentStatus.year])]
 				.sort((first, second) => yearOrder.indexOf(first) - yearOrder.indexOf(second));
 
 			years.forEach((year) => {
@@ -605,15 +670,18 @@
 				const yearHeading = document.createElement("h3");
 				yearHeading.className = "planned-year-heading";
 				yearHeading.textContent = year;
+				yearHeading.classList.toggle("is-current", year === currentStatus.year);
 				yearSection.append(yearHeading);
 
 				semesterOrder.forEach((semester) => {
 					const semesterCourses = plannedCourses.filter((course) => course.year === year && course.semester === semester);
 					const completedCourses = courses.filter((course) => course.year === year && course.semester === semester);
-					if (semesterCourses.length === 0 && completedCourses.length === 0) return;
+					const isCurrentSemester = year === currentStatus.year && semester === currentStatus.semester;
+					if (semesterCourses.length === 0 && completedCourses.length === 0 && !isCurrentSemester) return;
 
 					const semesterSection = document.createElement("section");
 					semesterSection.className = "planned-semester";
+					semesterSection.classList.toggle("is-current", isCurrentSemester);
 					const semesterHeading = document.createElement("h4");
 					semesterHeading.className = "planned-semester-heading";
 					const semesterName = document.createElement("span");
@@ -625,7 +693,14 @@
 					const semesterTotal = plannedCredits + completedCourses.reduce((sum, course) => sum + Number(course.credits), 0);
 					const semesterProgress = semesterTotal ? Math.min(100, Math.round((completedCredits / semesterTotal) * 100)) : 0;
 					semesterCredits.textContent = `${semesterTotal} CFU totali`;
-					semesterHeading.append(semesterName, semesterCredits);
+					semesterHeading.append(semesterName);
+					if (isCurrentSemester) {
+						const currentBadge = document.createElement("span");
+						currentBadge.className = "current-semester-badge";
+						currentBadge.textContent = "In corso";
+						semesterHeading.append(currentBadge);
+					}
+					semesterHeading.append(semesterCredits);
 					semesterSection.append(semesterHeading);
 					const progressTrack = document.createElement("div");
 					progressTrack.className = "semester-progress";
@@ -752,6 +827,9 @@
 		const passGradeField = document.getElementById("pass-grade-field");
 		const passGradeInput = document.getElementById("pass-grade");
 		const passEligibilityNote = document.getElementById("pass-eligibility-note");
+		const settingsModal = document.getElementById("settings-modal");
+		const settingsForm = document.getElementById("settings-form");
+		const enrollmentStartInput = document.getElementById("enrollment-start");
 
 		function syncAssessmentFields() {
 			const eligibilitySelected = assessmentType.value === "eligibility";
@@ -832,9 +910,38 @@
 		modal.addEventListener("click", (event) => {
 			if (event.target === modal) closeModal();
 		});
+		function closeSettings() {
+			settingsModal.classList.remove("open");
+		}
+
+		document.getElementById("open-settings").addEventListener("click", () => {
+			enrollmentStartInput.value = enrollmentStart;
+			settingsModal.classList.add("open");
+			enrollmentStartInput.focus();
+		});
+		document.getElementById("close-settings").addEventListener("click", closeSettings);
+		document.getElementById("cancel-settings").addEventListener("click", closeSettings);
+		settingsModal.addEventListener("click", (event) => {
+			if (event.target === settingsModal) closeSettings();
+		});
+		settingsForm.addEventListener("submit", (event) => {
+			event.preventDefault();
+			const value = enrollmentStartInput.value;
+			if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(value)) return;
+			enrollmentStart = value;
+			try {
+				localStorage.setItem("quaderno-enrollment-start", enrollmentStart);
+			} catch {
+				// Le impostazioni restano valide per la sessione corrente.
+			}
+			renderAcademicStatus();
+			renderPlannedCourses();
+			closeSettings();
+		});
 		document.addEventListener("keydown", (event) => {
 			if (event.key === "Escape") closeModal();
 			if (event.key === "Escape") closePassModal();
+			if (event.key === "Escape") closeSettings();
 		});
 
 		document.getElementById("planned-form").addEventListener("submit", (event) => {
@@ -898,6 +1005,7 @@
 		simulatorGrade.addEventListener("change", updateSummary);
 		document.getElementById("simulator-credits").addEventListener("input", updateSummary);
 
+		renderAcademicStatus();
 		renderCourses();
 		renderPlannedCourses();
 	</script>
